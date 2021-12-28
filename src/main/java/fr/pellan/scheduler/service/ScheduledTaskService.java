@@ -80,7 +80,7 @@ public class ScheduledTaskService {
         ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
 
         if(dto != null && !CollectionUtils.isEmpty(dto.getInputs())){
-            scheduledTaskInputService.createInputs(dto.getInputs());
+            dto.setInputs(scheduledTaskInputService.createInputs(dto.getInputs()));
         }
 
         return dto;
