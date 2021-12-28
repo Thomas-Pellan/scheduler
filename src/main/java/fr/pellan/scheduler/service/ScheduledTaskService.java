@@ -3,14 +3,17 @@ package fr.pellan.scheduler.service;
 import fr.pellan.scheduler.dto.ScheduledTaskDTO;
 import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
+import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
 import fr.pellan.scheduler.factory.CronExceptionEntityFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
+import fr.pellan.scheduler.factory.ScheduledTaskInputEntityFactory;
 import fr.pellan.scheduler.repository.CronExpressionRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -74,6 +77,12 @@ public class ScheduledTaskService {
         }
         task.setCronExpression(cronExpression);
 
-        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+        ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+
+        if(dto != null && !CollectionUtils.isEmpty(dto.getInputs())){
+            scheduledTaskInputService.createInputs(dto.getInputs());
+        }
+
+        return dto;
     }
 }
