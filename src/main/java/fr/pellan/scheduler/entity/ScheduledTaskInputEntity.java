@@ -1,9 +1,12 @@
 package fr.pellan.scheduler.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table(schema= "scheduled", name="scheduled_task_input")
 public class ScheduledTaskInputEntity {
 
@@ -12,7 +15,7 @@ public class ScheduledTaskInputEntity {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name="id_scheduled_task")
+    @JoinColumn(name = "id_scheduled_task", nullable = false)
     private ScheduledTaskEntity scheduledTask;
 
     @Column(name="property_key")

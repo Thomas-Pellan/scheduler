@@ -1,9 +1,12 @@
 package fr.pellan.scheduler.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table(schema= "scheduled", name="scheduled_task_output")
 public class ScheduledTaskOutputEntity {
 
