@@ -1,19 +1,16 @@
 package fr.pellan.scheduler.service;
 
+import fr.pellan.scheduler.dto.ScheduledTaskDTO;
+import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.repository.ScheduledTaskOutputRepository;
+import fr.pellan.scheduler.factory.CronExceptionEntityFactory;
+import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
+import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
+import fr.pellan.scheduler.repository.CronExpressionRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
-import fr.pellan.scheduler.task.RunnableTask;
-import fr.pellan.scheduler.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -22,42 +19,45 @@ import java.util.List;
 public class ScheduledTaskService {
 
     @Autowired
-    private HttpUtil httpUtil;
+    ScheduledTaskEntityFactory scheduledTaskEntityFactory;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    CronExceptionEntityFactory cronExceptionEntityFactory;
 
     @Autowired
-    private ScheduledTaskInputService scheduledTaskInputService;
+    CronExpressionRepository cronExpressionRepository;
 
     @Autowired
-    private ScheduledTaskOutputRepository scheduledTaskOutputRepository;
+    ScheduledTaskRepository scheduledTaskRepository;
 
-    private static final int POOL_SIZE= 5;
+    @Autowired
+    ScheduledTaskDTOFactory scheduledTaskDTOFactory;
 
-    @EventListener(ApplicationReadyEvent.class)
-    private void launchScheduledTasks(){
+    public List<ScheduledTaskDTO> find(){
 
-        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findActive();
-        if (CollectionUtils.isEmpty(tasks)) {
-            return;
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());
+    }
+
+    public boolean deleteTask(String name){
+
+        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findByName(name);
+        scheduledTaskRepository.deleteAll(tasks);
+
+        return true;
+    }
+
+    public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
+
+        //Create cron expression if it does not exist
+        CronExpressionEntity cronExpression = cronExpressionRepository.findByExpression(taskDto.getCronExpression());
+        if(cronExpression == null){
+            cronExpression = cronExceptionEntityFactory.buildCronExpressionEntity(taskDto.getCronExpression());
+            cronExpression = cronExpressionRepository.save(cronExpression);
         }
 
-        //Init cron scheduler
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(POOL_SIZE);
-        threadPoolTaskScheduler.initialize();
-
-        //Creating tasks
-        tasks.forEach(t -> {
-            if(t.getCronExpression() == null || StringUtils.isBlank(t.getCronExpression().getCronPattern())){
-                return;
-            }
-
-            CronTrigger cronTrigger
-                    = new CronTrigger(t.getCronExpression().getCronPattern());
-
-            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputRepository), cronTrigger);
-        });
+        //Create task
+        ScheduledTaskEntity task = scheduledTaskEntityFactory.buildScheduledTaskEntity(taskDto);
+        task.setCronExpression(cronExpression);
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
     }
 }
