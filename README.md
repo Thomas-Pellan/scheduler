@@ -10,3 +10,4 @@
 
 - 0.0.1 : Spring/Maven project setup + entities and sql init
 - 0.0.2 : creating cron tasks at startup, fire a simple http post to a target using the given configuration
+- 0.0.3 : exposing mock controller for testing purpose and output testing

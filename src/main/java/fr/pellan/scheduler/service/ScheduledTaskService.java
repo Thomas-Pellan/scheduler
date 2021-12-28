@@ -1,6 +1,7 @@
 package fr.pellan.scheduler.service;
 
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
+import fr.pellan.scheduler.repository.ScheduledTaskOutputRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.task.RunnableTask;
 import fr.pellan.scheduler.util.HttpUtil;
@@ -29,6 +30,9 @@ public class ScheduledTaskService {
     @Autowired
     private ScheduledTaskInputService scheduledTaskInputService;
 
+    @Autowired
+    private ScheduledTaskOutputRepository scheduledTaskOutputRepository;
+
     private static final int POOL_SIZE= 5;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -53,7 +57,7 @@ public class ScheduledTaskService {
             CronTrigger cronTrigger
                     = new CronTrigger(t.getCronExpression().getCronPattern());
 
-            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository), cronTrigger);
+            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputRepository), cronTrigger);
         });
     }
 }

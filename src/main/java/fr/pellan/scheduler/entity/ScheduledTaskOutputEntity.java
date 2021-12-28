@@ -1,12 +1,18 @@
 package fr.pellan.scheduler.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(schema= "scheduled", name="scheduled_task_output")
 public class ScheduledTaskOutputEntity {
 
