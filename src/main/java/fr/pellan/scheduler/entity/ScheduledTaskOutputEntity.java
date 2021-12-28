@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
 public class ScheduledTaskOutputEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name="id_scheduled_task")

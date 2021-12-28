@@ -33,6 +33,12 @@ public class ScheduledTaskService {
     @Autowired
     ScheduledTaskDTOFactory scheduledTaskDTOFactory;
 
+    @Autowired
+    ScheduledTaskInputService scheduledTaskInputService;
+
+    @Autowired
+    ScheduledTaskOutputService scheduledTaskOutputService;
+
     public List<ScheduledTaskDTO> find(){
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());
@@ -41,6 +47,13 @@ public class ScheduledTaskService {
     public boolean deleteTask(String name){
 
         List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findByName(name);
+
+        //Deleting sub entities
+        tasks.forEach(t -> {
+            scheduledTaskInputService.delete(t);
+            scheduledTaskOutputService.delete(t);
+        });
+
         scheduledTaskRepository.deleteAll(tasks);
 
         return true;
@@ -48,16 +61,19 @@ public class ScheduledTaskService {
 
     public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
 
+        ScheduledTaskEntity task = scheduledTaskEntityFactory.buildScheduledTaskEntity(taskDto);
+        if(task == null){
+            return null;
+        }
+
         //Create cron expression if it does not exist
         CronExpressionEntity cronExpression = cronExpressionRepository.findByExpression(taskDto.getCronExpression());
         if(cronExpression == null){
             cronExpression = cronExceptionEntityFactory.buildCronExpressionEntity(taskDto.getCronExpression());
             cronExpression = cronExpressionRepository.save(cronExpression);
         }
-
-        //Create task
-        ScheduledTaskEntity task = scheduledTaskEntityFactory.buildScheduledTaskEntity(taskDto);
         task.setCronExpression(cronExpression);
+
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
     }
 }
