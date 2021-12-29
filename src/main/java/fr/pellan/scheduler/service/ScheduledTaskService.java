@@ -1,19 +1,15 @@
 package fr.pellan.scheduler.service;
 
+import fr.pellan.scheduler.dto.ScheduledTaskDTO;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.repository.ScheduledTaskOutputRepository;
+import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
+import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
-import fr.pellan.scheduler.task.RunnableTask;
-import fr.pellan.scheduler.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -22,42 +18,86 @@ import java.util.List;
 public class ScheduledTaskService {
 
     @Autowired
-    private HttpUtil httpUtil;
+    ScheduledTaskEntityFactory scheduledTaskEntityFactory;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    ScheduledTaskRepository scheduledTaskRepository;
 
     @Autowired
-    private ScheduledTaskInputService scheduledTaskInputService;
+    ScheduledTaskDTOFactory scheduledTaskDTOFactory;
 
     @Autowired
-    private ScheduledTaskOutputRepository scheduledTaskOutputRepository;
+    ScheduledTaskInputService scheduledTaskInputService;
 
-    private static final int POOL_SIZE= 5;
+    @Autowired
+    ScheduledTaskOutputService scheduledTaskOutputService;
 
-    @EventListener(ApplicationReadyEvent.class)
-    private void launchScheduledTasks(){
+    @Autowired
+    CronExpressionService cronExpressionService;
 
-        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findActive();
-        if (CollectionUtils.isEmpty(tasks)) {
-            return;
+    public List<ScheduledTaskDTO> find(){
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());
+    }
+
+    public boolean deleteTask(String name){
+
+        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findByName(name);
+
+        //Deleting sub entities
+        tasks.forEach(t -> {
+            scheduledTaskInputService.deleteInputs(t);
+            scheduledTaskOutputService.delete(t);
+        });
+
+        scheduledTaskRepository.deleteAll(tasks);
+
+        return true;
+    }
+
+    public ScheduledTaskDTO updateTask(ScheduledTaskDTO taskDto){
+
+        ScheduledTaskEntity task = scheduledTaskRepository.findById(taskDto.getId()).orElse(null);
+        if(task == null){
+            return null;
         }
 
-        //Init cron scheduler
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(POOL_SIZE);
-        threadPoolTaskScheduler.initialize();
+        //Update Cron if changed or create a new one
+        if(!StringUtils.isBlank(taskDto.getCronExpression())){
+            task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
+        }
 
-        //Creating tasks
-        tasks.forEach(t -> {
-            if(t.getCronExpression() == null || StringUtils.isBlank(t.getCronExpression().getCronPattern())){
-                return;
-            }
+        //Update task
+        task.setActive(taskDto.isActive());
+        task.setName(taskDto.getName());
+        task.setUrl(taskDto.getUrl());
 
-            CronTrigger cronTrigger
-                    = new CronTrigger(t.getCronExpression().getCronPattern());
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+    }
 
-            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputRepository), cronTrigger);
-        });
+    public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
+
+        ScheduledTaskEntity task = scheduledTaskEntityFactory.buildScheduledTaskEntity(taskDto);
+        if(task == null){
+            return null;
+        }
+
+        //Check for existing tasks with the same data
+        List<ScheduledTaskEntity> existing = scheduledTaskRepository.findByName(taskDto.getName());
+        if(!CollectionUtils.isEmpty(existing)){
+            return null;
+        }
+
+        //Create cron expression if it does not exist
+        task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
+
+        ScheduledTaskEntity newTask = scheduledTaskRepository.save(task);
+        ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(newTask);
+
+        if(!CollectionUtils.isEmpty(taskDto.getInputs())){
+            dto.setInputs(scheduledTaskInputService.createInputs(newTask, taskDto.getInputs()));
+        }
+
+        return dto;
     }
 }

@@ -1,18 +1,25 @@
 package fr.pellan.scheduler.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(schema= "scheduled", name="scheduled_task_input")
 public class ScheduledTaskInputEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "id_scheduled_task", nullable = false)

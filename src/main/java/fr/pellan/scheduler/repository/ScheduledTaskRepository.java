@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface ScheduledTaskRepository extends CrudRepository<ScheduledTaskEntity, Integer> {
 
+    @Query("select s from ScheduledTaskEntity s where s.name = :name")
+    List<ScheduledTaskEntity> findByName(String name);
+
     @Query("select s from ScheduledTaskEntity s where s.active = true")
     List<ScheduledTaskEntity> findActive();
 }
