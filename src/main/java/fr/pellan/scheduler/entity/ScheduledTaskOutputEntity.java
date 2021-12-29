@@ -28,6 +28,12 @@ public class ScheduledTaskOutputEntity {
     @Column(name="execution_date")
     private LocalDateTime executionDate;
 
-    @Column(name="return_value")
-    private String returnValue;
+    @Column(name="data")
+    private String data;
+
+    @Column(name="state")
+    private String state;
+
+    @Column(name="log")
+    private String log;
 }

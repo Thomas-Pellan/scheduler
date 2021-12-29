@@ -31,7 +31,7 @@ public class ThreadPoolService {
     private ScheduledTaskInputService scheduledTaskInputService;
 
     @Autowired
-    private ScheduledTaskOutputRepository scheduledTaskOutputRepository;
+    private ScheduledTaskOutputService scheduledTaskOutputService;
 
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
 
@@ -73,7 +73,7 @@ public class ThreadPoolService {
             CronTrigger cronTrigger
                     = new CronTrigger(t.getCronExpression().getCronPattern());
 
-            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputRepository), cronTrigger);
+            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputService), cronTrigger);
         });
     }
 }

@@ -1,10 +1,10 @@
 package fr.pellan.scheduler.controller;
 
+import com.google.gson.Gson;
 import fr.pellan.scheduler.dto.MockTestTaskControllerDTO;
+import fr.pellan.scheduler.task.TaskResultResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,17 +21,15 @@ public class MockTestTaskController {
     private ResponseEntity<String> helloWorld(@RequestBody MockTestTaskControllerDTO data){
 
         if(data != null && !StringUtils.isBlank(data.getTestData())){
-            log.info("helloWorld : look what I got : {}", data.getTestData());
+            log.info("helloWorld : got data from scheduler : {}", data.getTestData());
         }
 
-        JSONObject returnValue = new JSONObject();
-        try {
-            returnValue.put("data", "Oh hi Mark !");
-        } catch (JSONException e) {
-            log.error("helloWorld : error happened", e);
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        TaskResultResponse response = TaskResultResponse.builder()
+                .success(true)
+                .data("Oh hi Mark !!")
+                .error("Nothing serious was broken")
+                .build();
 
-        return new ResponseEntity(returnValue.toString(), HttpStatus.OK);
+        return new ResponseEntity(new Gson().toJson(response), HttpStatus.OK);
     }
 }
