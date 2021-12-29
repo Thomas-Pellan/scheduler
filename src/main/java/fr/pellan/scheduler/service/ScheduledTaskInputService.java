@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,19 +30,19 @@ public class ScheduledTaskInputService {
     @Autowired
     ScheduledTaskInputDTOFactory scheduledTaskInputDTOFactory;
 
-    public List<ScheduledTaskInputDTO> createInputs(List<ScheduledTaskInputDTO> dtos){
+    public List<ScheduledTaskInputDTO> createInputs(ScheduledTaskEntity task, List<ScheduledTaskInputDTO> dtos){
 
         List<ScheduledTaskInputEntity> inputs = scheduledTaskInputEntityFactory.buildScheduledTaskInputEntity(dtos);
         if(CollectionUtils.isEmpty(inputs)){
             return new ArrayList<>();
         }
+        inputs.forEach(i -> i.setScheduledTask(task));
         List<ScheduledTaskInputEntity> inputsSaved = (List<ScheduledTaskInputEntity>) scheduledTaskInputRepository.saveAll(inputs);
 
         return scheduledTaskInputDTOFactory.buildScheduledTaskInputDTO(inputsSaved);
     }
 
-    @Transactional
-    public boolean delete(ScheduledTaskEntity task){
+    public boolean deleteInputs(ScheduledTaskEntity task){
 
         List<ScheduledTaskInputEntity> inputs = scheduledTaskInputRepository.findByTask(task);
         if(!CollectionUtils.isEmpty(inputs)){

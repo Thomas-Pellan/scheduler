@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "feb91395-ef88-4bba-a47c-c75d7efe6303",
+		"name": "Scheduler tests",
+		"description": "Tests description on the spring scheduler app by Thomas pellan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Reload pool",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/pool/reload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pool",
+						"reload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create task",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"creation from postman 3\",\n    \"url\" : \"http://localhost:8080/test/helloworld\",\n    \"active\" : 0,\n    \"cronExpression\": \"*/16 * * * * *\",\n    \"inputs\" : [\n        {\n            \"key\" : \"test input via postman\", \n            \"value\" : \"toto\"\n        }, \n        {\n            \"key\" : \"test input via postman 2\", \n            \"value\" : \"toto\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/scheduled-task/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduled-task",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete task",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/scheduled-task/delete?name=creation from postman 3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduled-task",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "creation from postman 3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find all tasks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/scheduled-task/find/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduled-task",
+						"find",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update task",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"11\",\n    \"name\" : \"test modif depuis postman\",\n    \"url\" : \"http://localhost:8080/test/helloworld/toto\",\n    \"active\" : 0,\n    \"cronExpression\": \"*/20 * * * * *\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/scheduled-task/modify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"scheduled-task",
+						"modify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cron expression validation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/expresion/validate?expression=*/2 * * * * *",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"expresion",
+						"validate"
+					],
+					"query": [
+						{
+							"key": "expression",
+							"value": "*/2 * * * * *"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

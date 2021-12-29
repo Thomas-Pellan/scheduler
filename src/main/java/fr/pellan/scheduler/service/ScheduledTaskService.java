@@ -1,16 +1,12 @@
 package fr.pellan.scheduler.service;
 
 import fr.pellan.scheduler.dto.ScheduledTaskDTO;
-import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
-import fr.pellan.scheduler.factory.CronExceptionEntityFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
-import fr.pellan.scheduler.factory.ScheduledTaskInputEntityFactory;
-import fr.pellan.scheduler.repository.CronExpressionRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -25,12 +21,6 @@ public class ScheduledTaskService {
     ScheduledTaskEntityFactory scheduledTaskEntityFactory;
 
     @Autowired
-    CronExceptionEntityFactory cronExceptionEntityFactory;
-
-    @Autowired
-    CronExpressionRepository cronExpressionRepository;
-
-    @Autowired
     ScheduledTaskRepository scheduledTaskRepository;
 
     @Autowired
@@ -41,6 +31,9 @@ public class ScheduledTaskService {
 
     @Autowired
     ScheduledTaskOutputService scheduledTaskOutputService;
+
+    @Autowired
+    CronExpressionService cronExpressionService;
 
     public List<ScheduledTaskDTO> find(){
 
@@ -53,13 +46,33 @@ public class ScheduledTaskService {
 
         //Deleting sub entities
         tasks.forEach(t -> {
-            scheduledTaskInputService.delete(t);
+            scheduledTaskInputService.deleteInputs(t);
             scheduledTaskOutputService.delete(t);
         });
 
         scheduledTaskRepository.deleteAll(tasks);
 
         return true;
+    }
+
+    public ScheduledTaskDTO updateTask(ScheduledTaskDTO taskDto){
+
+        ScheduledTaskEntity task = scheduledTaskRepository.findById(taskDto.getId()).orElse(null);
+        if(task == null){
+            return null;
+        }
+
+        //Update Cron if changed or create a new one
+        if(!StringUtils.isBlank(taskDto.getCronExpression())){
+            task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
+        }
+
+        //Update task
+        task.setActive(taskDto.isActive());
+        task.setName(taskDto.getName());
+        task.setUrl(taskDto.getUrl());
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
     }
 
     public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
@@ -69,18 +82,20 @@ public class ScheduledTaskService {
             return null;
         }
 
-        //Create cron expression if it does not exist
-        CronExpressionEntity cronExpression = cronExpressionRepository.findByExpression(taskDto.getCronExpression());
-        if(cronExpression == null){
-            cronExpression = cronExceptionEntityFactory.buildCronExpressionEntity(taskDto.getCronExpression());
-            cronExpression = cronExpressionRepository.save(cronExpression);
+        //Check for existing tasks with the same data
+        List<ScheduledTaskEntity> existing = scheduledTaskRepository.findByName(taskDto.getName());
+        if(!CollectionUtils.isEmpty(existing)){
+            return null;
         }
-        task.setCronExpression(cronExpression);
 
-        ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+        //Create cron expression if it does not exist
+        task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
 
-        if(dto != null && !CollectionUtils.isEmpty(dto.getInputs())){
-            dto.setInputs(scheduledTaskInputService.createInputs(dto.getInputs()));
+        ScheduledTaskEntity newTask = scheduledTaskRepository.save(task);
+        ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(newTask);
+
+        if(!CollectionUtils.isEmpty(taskDto.getInputs())){
+            dto.setInputs(scheduledTaskInputService.createInputs(newTask, taskDto.getInputs()));
         }
 
         return dto;

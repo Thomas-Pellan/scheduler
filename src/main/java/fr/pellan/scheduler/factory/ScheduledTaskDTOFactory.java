@@ -30,6 +30,7 @@ public class ScheduledTaskDTOFactory {
         }
 
         ScheduledTaskDTO dto = ScheduledTaskDTO.builder()
+                .id(entity.getId())
                 .active(entity.isActive())
                 .name(entity.getName())
                 .url(entity.getUrl())

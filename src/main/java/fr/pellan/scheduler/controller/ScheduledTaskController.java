@@ -2,7 +2,6 @@ package fr.pellan.scheduler.controller;
 
 import fr.pellan.scheduler.dto.ScheduledTaskDTO;
 import fr.pellan.scheduler.service.ScheduledTaskService;
-import fr.pellan.scheduler.service.ThreadPoolService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,25 @@ public class ScheduledTaskController {
     @Autowired
     ScheduledTaskService scheduledTaskService;
 
-    @GetMapping(path="/find")
-    private ResponseEntity<List<ScheduledTaskDTO>> findTasks(){
+    @GetMapping(path="/find/all")
+    private ResponseEntity<List<ScheduledTaskDTO>> findAllTasks(){
 
         return new ResponseEntity<>(scheduledTaskService.find(), HttpStatus.OK);
+    }
+
+    @PostMapping(path="/modify")
+    private ResponseEntity<ScheduledTaskDTO> updateTask(@RequestBody ScheduledTaskDTO taskDto){
+
+        if(taskDto == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        ScheduledTaskDTO dto = scheduledTaskService.updateTask(taskDto);
+        if(dto == null){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @PutMapping(path="/create")
