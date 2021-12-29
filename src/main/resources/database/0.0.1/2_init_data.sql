@@ -9,7 +9,7 @@ VALUES (
    1,
    'testScheduledTask1',
    true,
-   'http://localhost:8099'
+   'http://localhost:8099/helloworld/test'
 );
 
 INSERT INTO scheduler.scheduled_task_input(id_scheduled_task, property_key, property_value)
