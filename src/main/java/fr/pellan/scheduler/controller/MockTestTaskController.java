@@ -3,6 +3,9 @@ package fr.pellan.scheduler.controller;
 import com.google.gson.Gson;
 import fr.pellan.scheduler.dto.MockTestTaskControllerDTO;
 import fr.pellan.scheduler.task.TaskResultResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -12,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Mock Controller for task response")
 @Slf4j
 @RestController
 @RequestMapping("test")
 public class MockTestTaskController {
 
+    @Operation(summary = "Hello World",
+            description = "Prints a log with parameter and sends back somme info")
     @PostMapping(path="/helloworld")
+    @ApiResponse(responseCode = "200", description = "call succeeded, see body for response")
     private ResponseEntity<String> helloWorld(@RequestBody MockTestTaskControllerDTO data){
 
         if(data != null && !StringUtils.isBlank(data.getTestData())){
