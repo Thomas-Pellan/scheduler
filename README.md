@@ -15,4 +15,4 @@
 
 ### Doc - Tests
 
-Documentation visinle once the app is started under http://localhost:8080/swagger-ui/index.html
+Documentation visible once the app is started under http://localhost:8080/swagger-ui/index.html
