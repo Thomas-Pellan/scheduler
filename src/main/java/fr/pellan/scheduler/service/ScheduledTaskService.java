@@ -35,6 +35,11 @@ public class ScheduledTaskService {
     @Autowired
     CronExpressionService cronExpressionService;
 
+    public List<ScheduledTaskDTO> searchTasks(String name, String url){
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findByNameOrUrl(name, url));
+    }
+
     public List<ScheduledTaskDTO> find(){
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());

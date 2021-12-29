@@ -1,8 +1,9 @@
 package fr.pellan.scheduler.service;
 
+import fr.pellan.scheduler.dto.ScheduledTaskOutputDTO;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskOutputEntity;
+import fr.pellan.scheduler.factory.ScheduledTaskOutputDTOFactory;
 import fr.pellan.scheduler.repository.ScheduledTaskOutputRepository;
 import fr.pellan.scheduler.task.TaskState;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,9 @@ public class ScheduledTaskOutputService {
     @Autowired
     private ScheduledTaskOutputRepository scheduledTaskOutputRepository;
 
+    @Autowired
+    private ScheduledTaskOutputDTOFactory scheduledTaskOutputDTOFactory;
+
     @Transactional
     public ScheduledTaskOutputEntity create(ScheduledTaskEntity task, TaskState state, String data, String log){
 
@@ -36,11 +40,29 @@ public class ScheduledTaskOutputService {
         return entity;
     }
 
+    public List<ScheduledTaskOutputDTO> listTaskOutputs(String taskName){
+
+        return scheduledTaskOutputDTOFactory.buildScheduledTaskOutputDTO(scheduledTaskOutputRepository.findByTaskName(taskName));
+    }
+
+    @Transactional
+    public boolean deleteBeforeDateTimerByTaskName(String taskName, LocalDateTime date){
+
+        List<ScheduledTaskOutputEntity> outputs = scheduledTaskOutputRepository.findByTaskName(taskName);
+        if(!CollectionUtils.isEmpty(outputs)){
+
+            outputs.removeIf(o -> o.getExecutionDate().isBefore(date));
+            scheduledTaskOutputRepository.deleteAll();
+        }
+
+        return true;
+    }
+
     @Transactional
     public boolean delete(ScheduledTaskEntity task){
 
-        List<ScheduledTaskOutputEntity> inputs = scheduledTaskOutputRepository.findByTask(task);
-        if(!CollectionUtils.isEmpty(inputs)){
+        List<ScheduledTaskOutputEntity> outputs = scheduledTaskOutputRepository.findByTask(task);
+        if(!CollectionUtils.isEmpty(outputs)){
             scheduledTaskOutputRepository.deleteAll();
         }
 

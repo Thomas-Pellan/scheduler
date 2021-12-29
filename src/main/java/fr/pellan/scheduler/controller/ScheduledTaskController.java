@@ -23,6 +23,16 @@ public class ScheduledTaskController {
     @Autowired
     ScheduledTaskService scheduledTaskService;
 
+    @Operation(summary = "Find tasks",
+            description = "Searches for tasks currently saved in the database using parameters")
+    @GetMapping(path="/find")
+    @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
+    private ResponseEntity<List<ScheduledTaskDTO>> findTasks(@RequestParam(name = "name", required = false) String name,
+                                                             @RequestParam(name = "url", required = false) String url){
+
+        return new ResponseEntity<>(scheduledTaskService.searchTasks(name, url), HttpStatus.OK);
+    }
+
     @Operation(summary = "Find all database tasks",
             description = "Searches for all tasks currently saved in the database")
     @GetMapping(path="/find/all")

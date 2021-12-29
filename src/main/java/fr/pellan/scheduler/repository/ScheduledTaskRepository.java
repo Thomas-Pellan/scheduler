@@ -11,6 +11,12 @@ import java.util.List;
 @Repository
 public interface ScheduledTaskRepository extends CrudRepository<ScheduledTaskEntity, Integer> {
 
+    @Query("select s " +
+            "from ScheduledTaskEntity s " +
+            "where (:name is null or s.name = :name) " +
+            "and (:url is null or s.url = :url)")
+    List<ScheduledTaskEntity> findByNameOrUrl(String name, String url);
+
     @Query("select s from ScheduledTaskEntity s where s.name = :name")
     List<ScheduledTaskEntity> findByName(String name);
 
