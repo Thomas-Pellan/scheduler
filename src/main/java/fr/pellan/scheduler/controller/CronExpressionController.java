@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller exposin data and functionnalities for cron expressions.
+ */
 @Tag(name = "Cron Expression")
 @Slf4j
 @RestController
@@ -23,6 +26,11 @@ public class CronExpressionController {
     @Autowired
     private CronExpressionService cronExpressionService;
 
+    /**
+     * Validates a cron expression string using spring validation.
+     * @param expression the expression to validate
+     * @return true if valid, false otherwise
+     */
     @Operation(summary = "Cron expression validation",
             description = "Validates a string as a valid Spring cron expressiob")
     @PostMapping(path="/validate")

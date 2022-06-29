@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
+/**
+ * Factory building cron rexpression entities.
+ */
 @Slf4j
 @Service
 public class CronExceptionEntityFactory {

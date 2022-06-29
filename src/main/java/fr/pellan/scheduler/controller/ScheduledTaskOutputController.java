@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * The controller exposing data ouput from the different tasks executions.
+ */
 @Tag(name = "Scheduled Task Output")
 @Slf4j
 @RestController
@@ -24,6 +27,11 @@ public class ScheduledTaskOutputController {
     @Autowired
     ScheduledTaskOutputService scheduledTaskOutputService;
 
+    /**
+     * Lists all outputs from a task.
+     * @param taskName the target task name
+     * @return a list of task output dtos
+     */
     @Operation(summary = "List outputs by task name",
             description = "Gets all outputs for the target task")
     @GetMapping(path="/list")
@@ -33,6 +41,12 @@ public class ScheduledTaskOutputController {
         return new ResponseEntity<>(scheduledTaskOutputService.listTaskOutputs(taskName), HttpStatus.OK);
     }
 
+    /**
+     * Deletes all outputs from the target task
+     * @param name the name of the task
+     * @param date the target date from when to stop deletion
+     * @return true if successfull, false otherwise
+     */
     @Operation(summary = "Task output flush",
             description = "Deletes all outputs from the target task before the given date")
     @DeleteMapping(path="/flush")

@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service used to manipulate cron expressions.
+ */
 @Slf4j
 @Service
 public class CronExpressionService {
@@ -18,6 +21,11 @@ public class CronExpressionService {
     @Autowired
     private CronExpressionRepository cronExpressionRepository;
 
+    /**
+     * Creates a cron rxpression from the given string and persists it in the database.
+     * @param expression the target string to persists
+     * @return an entity saved in the db
+     */
     public CronExpressionEntity createExpression(String expression){
 
         CronExpressionEntity cronExpression = cronExpressionRepository.findByExpression(expression);
@@ -29,6 +37,11 @@ public class CronExpressionService {
         return cronExpression;
     }
 
+    /**
+     * Validates a cron string expression
+     * @param expression the string to validate
+     * @return true is valid, false otherwise
+     */
     public boolean validate(String expression){
 
         try{

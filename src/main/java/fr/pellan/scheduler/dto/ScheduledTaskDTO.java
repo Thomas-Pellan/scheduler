@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Dto containing data on the scheduled task
+ * @see fr.pellan.scheduler.entity.ScheduledTaskEntity
+ */
 @Data
 @Builder
 public class ScheduledTaskDTO implements Serializable {

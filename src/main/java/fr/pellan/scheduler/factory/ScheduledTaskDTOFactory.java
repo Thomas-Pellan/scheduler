@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Factory building task dto from entities.
+ */
 @Slf4j
 @Service
 public class ScheduledTaskDTOFactory {

@@ -9,6 +9,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Entity used to store data about the scheduled task and it's parameters.
+ */
 @Entity
 @Data
 @Builder

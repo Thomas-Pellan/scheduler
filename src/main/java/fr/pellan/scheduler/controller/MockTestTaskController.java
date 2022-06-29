@@ -15,12 +15,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Mock controller used to simulate a remote task execution and it's return value.
+ */
 @Tag(name = "Mock Controller for task response")
 @Slf4j
 @RestController
 @RequestMapping("test")
 public class MockTestTaskController {
 
+    /**
+     * Prints the data received and sends back a simple response.
+     * @param data the data input
+     * @return a string output
+     */
     @Operation(summary = "Hello World",
             description = "Prints a log with parameter and sends back somme info")
     @PostMapping(path="/helloworld")

@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entity used to store data on a scheduled task output and execution
+ */
 @Entity
 @Data
 @Builder

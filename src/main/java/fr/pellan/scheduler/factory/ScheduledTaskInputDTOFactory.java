@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Factory used to build task input dto from db entities.
+ */
 @Slf4j
 @Service
 public class ScheduledTaskInputDTOFactory {

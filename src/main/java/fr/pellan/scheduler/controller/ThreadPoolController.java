@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller used to manage the task thread pool
+ */
 @Tag(name = "Task thread pool operations")
 @Slf4j
 @RestController
@@ -21,6 +24,10 @@ public class ThreadPoolController {
     @Autowired
     ThreadPoolService threadPoolService;
 
+    /**
+     * Reloads thread pool with up to date tasks to execure
+     * @return a http ok entity
+     */
     @Operation(summary = "Reload task pool",
             description = "Destroys the current task pool tasks and creates a new one with all the active tasks in database")
     @PostMapping(path="/reload")

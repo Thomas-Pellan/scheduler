@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Factory used to create task input entity from dtos.
+ */
 @Slf4j
 @Service
 public class ScheduledTaskInputEntityFactory {
+
 
     public List<ScheduledTaskInputEntity> buildScheduledTaskInputEntity(List<ScheduledTaskInputDTO> dtos){
 

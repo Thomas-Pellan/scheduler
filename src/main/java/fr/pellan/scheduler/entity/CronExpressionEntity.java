@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Entity containing a simple spring cronn expression as string.
+ */
 @Entity
 @Data
 @Builder

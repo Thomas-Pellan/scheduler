@@ -10,10 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Factory building task output dto from entities.
+ */
 @Slf4j
 @Service
 public class ScheduledTaskOutputDTOFactory {
 
+    /**
+     * Builds a list of dtos from a list of entities
+     * @param entities the list of entities
+     * @return a list of output dtos
+     */
     public List<ScheduledTaskOutputDTO> buildScheduledTaskOutputDTO(List<ScheduledTaskOutputEntity> entities){
 
         if(CollectionUtils.isEmpty(entities)){
@@ -23,6 +31,11 @@ public class ScheduledTaskOutputDTOFactory {
         return entities.stream().map(d -> buildScheduledTaskOutputDTO(d)).collect(Collectors.toList());
     }
 
+    /**
+     * Builds a dto from an entity
+     * @param entity the target entity
+     * @return an output dto
+     */
     public ScheduledTaskOutputDTO buildScheduledTaskOutputDTO(ScheduledTaskOutputEntity entity){
 
         if(entity == null){

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller exposing shceduled task data.
+ */
 @Tag(name = "Scheduled Task")
 @Slf4j
 @RestController
@@ -23,6 +26,12 @@ public class ScheduledTaskController {
     @Autowired
     ScheduledTaskService scheduledTaskService;
 
+    /**
+     * Searches for existing tasks in database
+     * @param name the name of the task
+     * @param url the url sued by the task
+     * @return a list of existing tasks dto if found
+     */
     @Operation(summary = "Find tasks",
             description = "Searches for tasks currently saved in the database using parameters")
     @GetMapping(path="/find")
@@ -33,6 +42,10 @@ public class ScheduledTaskController {
         return new ResponseEntity<>(scheduledTaskService.searchTasks(name, url), HttpStatus.OK);
     }
 
+    /**
+     * Returns all shcedukled tasks stored.
+     * @return a list of scheduled tasks dtos
+     */
     @Operation(summary = "Find all database tasks",
             description = "Searches for all tasks currently saved in the database")
     @GetMapping(path="/find/all")
@@ -42,6 +55,11 @@ public class ScheduledTaskController {
         return new ResponseEntity<>(scheduledTaskService.find(), HttpStatus.OK);
     }
 
+    /**
+     * Updates the target tasks in database
+     * @param taskDto the task dto
+     * @return the updated task dto, as persisted
+     */
     @Operation(summary = "Task editing",
             description = "Persists new data on the target task (name, active, url, cron expression)")
     @PostMapping(path="/modify")
@@ -62,6 +80,11 @@ public class ScheduledTaskController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    /**
+     * Creates anew task in the database.
+     * @param taskDto the task to persist
+     * @return a dto with the task as saved in the database
+     */
     @Operation(summary = "Task creation",
             description = "Creates a new task with the given paraemeters, if it is active you may want to reload the thread pool so it starts.")
     @PutMapping(path="/create")
@@ -82,6 +105,11 @@ public class ScheduledTaskController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    /**
+     * Deletes a terget task from the database.
+     * @param name the name of the task to delete
+     * @return true if deletion successfull, false otherwise
+     */
     @Operation(summary = "Task deletion",
             description = "Deletes the target task and it's info (logs, inputs, etc).")
     @DeleteMapping(path="/delete")
