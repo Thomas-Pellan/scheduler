@@ -15,6 +15,6 @@ public interface ScheduledTaskOutputRepository extends CrudRepository<ScheduledT
     @Query("select o from ScheduledTaskOutputEntity o where o.scheduledTask.name = :name order by o.executionDate desc")
     List<ScheduledTaskOutputEntity> findByTaskName(String name);
 
-    @Query("select o from ScheduledTaskOutputEntity o where o.scheduledTask = :scheduledTask")
+    @Query("select o from ScheduledTaskOutputEntity o where o.scheduledTask = :scheduledTask order by o.executionDate desc")
     List<ScheduledTaskOutputEntity> findByTask(ScheduledTaskEntity scheduledTask);
 }

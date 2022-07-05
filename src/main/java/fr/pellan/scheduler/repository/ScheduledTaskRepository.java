@@ -13,8 +13,8 @@ public interface ScheduledTaskRepository extends CrudRepository<ScheduledTaskEnt
 
     @Query("select s " +
             "from ScheduledTaskEntity s " +
-            "where (:name is null or s.name = :name) " +
-            "and (:url is null or s.url = :url)")
+            "where (:name is null or s.name like %:name%) " +
+            "and (:url is null or s.url like %:url%)")
     List<ScheduledTaskEntity> findByNameOrUrl(String name, String url);
 
     @Query("select s from ScheduledTaskEntity s where s.name = :name")
