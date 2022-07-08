@@ -40,6 +40,11 @@ public class ScheduledTaskService {
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findByNameOrUrl(name, url));
     }
 
+    public ScheduledTaskDTO findById(Integer id){
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findById(id).orElse(null));
+    }
+
     public List<ScheduledTaskDTO> find(){
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());

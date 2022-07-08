@@ -43,7 +43,21 @@ public class ScheduledTaskController {
     }
 
     /**
-     * Returns all shcedukled tasks stored.
+     * Gets a task by its id
+     * @param id the id of the task
+     * @return the task if found
+     */
+    @Operation(summary = "Find tasks",
+            description = "Searches for tasks currently saved in the database using parameters")
+    @GetMapping(path="/find/id")
+    @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
+    private ResponseEntity<ScheduledTaskDTO> findTaskById(@RequestParam(name = "id") Integer id){
+
+        return new ResponseEntity<>(scheduledTaskService.findById(id), HttpStatus.OK);
+    }
+
+    /**
+     * Returns all scheduled tasks stored.
      * @return a list of scheduled tasks dtos
      */
     @Operation(summary = "Find all database tasks",
