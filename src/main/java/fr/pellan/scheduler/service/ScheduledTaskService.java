@@ -79,6 +79,7 @@ public class ScheduledTaskService {
         return true;
     }
 
+    @Transactional
     public ScheduledTaskDTO updateTask(ScheduledTaskDTO taskDto){
 
         ScheduledTaskEntity task = scheduledTaskRepository.findById(taskDto.getId()).orElse(null);
@@ -96,7 +97,12 @@ public class ScheduledTaskService {
         task.setName(taskDto.getName());
         task.setUrl(taskDto.getUrl());
 
-        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+        ScheduledTaskEntity savedTask = scheduledTaskRepository.save(task);
+
+        //Reload the Thread Pool
+        threadPoolService.reloadThreadTasks();
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(savedTask);
     }
 
     public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
