@@ -121,7 +121,7 @@ public class ScheduledTaskController {
 
     /**
      * Deletes a terget task from the database.
-     * @param name the name of the task to delete
+     * @param id the id of the task to delete
      * @return true if deletion successfull, false otherwise
      */
     @Operation(summary = "Task deletion",
@@ -129,12 +129,12 @@ public class ScheduledTaskController {
     @DeleteMapping(path="/delete")
     @ApiResponse(responseCode = "200", description = "delete succeeded")
     @ApiResponse(responseCode = "400", description = "name parameter is null")
-    private ResponseEntity deleteTask(@RequestParam(name = "name") String name){
+    private ResponseEntity deleteTask(@RequestParam(name = "id") Integer id){
 
-        if(StringUtils.isBlank(name)){
+        if(id == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(scheduledTaskService.deleteTask(name), HttpStatus.OK);
+        return new ResponseEntity<>(scheduledTaskService.deleteTask(id), HttpStatus.OK);
     }
 }
