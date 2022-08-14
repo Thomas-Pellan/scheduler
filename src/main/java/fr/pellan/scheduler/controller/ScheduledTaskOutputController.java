@@ -36,7 +36,7 @@ public class ScheduledTaskOutputController {
             description = "Gets all outputs for the target task")
     @GetMapping(path="/list")
     @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
-    private ResponseEntity<List<ScheduledTaskOutputDTO>> findTasks(@RequestParam(name = "taskName") String taskName){
+    public ResponseEntity<List<ScheduledTaskOutputDTO>> findTasks(@RequestParam(name = "taskName") String taskName){
 
         return new ResponseEntity<>(scheduledTaskOutputService.listTaskOutputs(taskName), HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class ScheduledTaskOutputController {
             description = "Deletes all outputs from the target task before the given date")
     @DeleteMapping(path="/flush")
     @ApiResponse(responseCode = "200", description = "delete succeeded")
-    private ResponseEntity deleteTask(@RequestParam(name = "name") String name,
+    public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "name") String name,
                                       @RequestParam(name = "date") LocalDateTime date){
 
         if(StringUtils.isBlank(name) || date == null){

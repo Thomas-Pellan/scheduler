@@ -2,15 +2,11 @@ package fr.pellan.scheduler.controller;
 
 import com.google.gson.Gson;
 import fr.pellan.scheduler.dto.MockTestTaskControllerDTO;
-import fr.pellan.scheduler.entity.ScheduledTaskOutputEntity;
-import fr.pellan.scheduler.service.ScheduledTaskOutputService;
 import fr.pellan.scheduler.task.TaskResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,11 +35,11 @@ public class MockTestTaskController {
             description = "Prints a log with parameter and sends back somme info")
     @PostMapping(path="/helloworld")
     @ApiResponse(responseCode = "200", description = "call succeeded, see body for response")
-    private ResponseEntity<String> helloWorld(@RequestBody MockTestTaskControllerDTO data){
+    public ResponseEntity<String> helloWorld(@RequestBody MockTestTaskControllerDTO data){
 
         if(Math.random() < RANDOM_FAIL){
 
-            return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         TaskResultResponse response = TaskResultResponse.builder()
@@ -52,6 +48,6 @@ public class MockTestTaskController {
             .error("Nothing serious was broken")
             .build();
 
-        return new ResponseEntity(new Gson().toJson(response), HttpStatus.OK);
+        return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.OK);
     }
 }

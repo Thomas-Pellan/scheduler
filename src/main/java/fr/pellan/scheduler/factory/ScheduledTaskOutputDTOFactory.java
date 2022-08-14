@@ -28,7 +28,7 @@ public class ScheduledTaskOutputDTOFactory {
             return new ArrayList<>();
         }
 
-        return entities.stream().map(d -> buildScheduledTaskOutputDTO(d)).collect(Collectors.toList());
+        return entities.stream().map(this::buildScheduledTaskOutputDTO).collect(Collectors.toList());
     }
 
     /**
@@ -42,12 +42,10 @@ public class ScheduledTaskOutputDTOFactory {
             return null;
         }
 
-        ScheduledTaskOutputDTO dto = ScheduledTaskOutputDTO.builder()
+        return ScheduledTaskOutputDTO.builder()
                 .data(entity.getData())
                 .log(entity.getLog())
                 .state(entity.getState())
                 .build();
-
-        return dto;
     }
 }

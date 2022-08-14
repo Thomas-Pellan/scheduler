@@ -36,7 +36,7 @@ public class CronExpressionController {
     @PostMapping(path="/validate")
     @ApiResponse(responseCode = "200", description = "expression accepted, see body for response")
     @ApiResponse(responseCode = "400", description = "empty expression parameter")
-    private ResponseEntity<Boolean> updateTask(@RequestParam(name = "expression") String expression){
+    public ResponseEntity<Boolean> updateTask(@RequestParam(name = "expression") String expression){
 
         if(StringUtils.isBlank(expression)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

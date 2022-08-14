@@ -23,7 +23,7 @@ public class ScheduledTaskDTOFactory {
             return new ArrayList<>();
         }
 
-        return entities.stream().map(e -> buildScheduledTaskDTO(e)).collect(Collectors.toList());
+        return entities.stream().map(this::buildScheduledTaskDTO).collect(Collectors.toList());
     }
 
     public ScheduledTaskDTO buildScheduledTaskDTO(ScheduledTaskEntity entity){
@@ -32,7 +32,7 @@ public class ScheduledTaskDTOFactory {
             return null;
         }
 
-        ScheduledTaskDTO dto = ScheduledTaskDTO.builder()
+        return ScheduledTaskDTO.builder()
                 .id(entity.getId())
                 .active(entity.isActive())
                 .name(entity.getName())
@@ -41,7 +41,5 @@ public class ScheduledTaskDTOFactory {
                 .lastResult(entity.getLastResult())
                 .cronExpression(entity.getCronExpression().getCronPattern())
                 .build();
-
-        return dto;
     }
 }

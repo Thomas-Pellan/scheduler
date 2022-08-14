@@ -23,12 +23,10 @@ public class ScheduledTaskEntityFactory {
             return null;
         }
 
-        ScheduledTaskEntity entity = ScheduledTaskEntity.builder()
+        return ScheduledTaskEntity.builder()
                 .active(dto.isActive())
                 .name(dto.getName())
                 .url(dto.getUrl())
                 .build();
-
-        return entity;
     }
 }

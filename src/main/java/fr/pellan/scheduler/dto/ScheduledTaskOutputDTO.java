@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ScheduledTaskOutputDTO implements Serializable {
 
-    private LocalDateTime execution_date;
+    private LocalDateTime executionDate;
 
     private String data;
 

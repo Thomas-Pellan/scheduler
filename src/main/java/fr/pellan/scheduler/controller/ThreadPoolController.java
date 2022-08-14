@@ -32,10 +32,10 @@ public class ThreadPoolController {
             description = "Destroys the current task pool tasks and creates a new one with all the active tasks in database")
     @PostMapping(path="/reload")
     @ApiResponse(responseCode = "200", description = "reload succeeded")
-    private ResponseEntity reloadThreadPool(){
+    public ResponseEntity<HttpStatus> reloadThreadPool(){
 
         threadPoolService.reloadThreadTasks();
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

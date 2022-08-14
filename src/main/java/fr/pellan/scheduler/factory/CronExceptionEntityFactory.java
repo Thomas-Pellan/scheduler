@@ -32,10 +32,8 @@ public class CronExceptionEntityFactory {
             return null;
         }
 
-        CronExpressionEntity entity = CronExpressionEntity.builder()
+        return CronExpressionEntity.builder()
                 .cronPattern(cronExpression)
                 .build();
-
-        return entity;
     }
 }

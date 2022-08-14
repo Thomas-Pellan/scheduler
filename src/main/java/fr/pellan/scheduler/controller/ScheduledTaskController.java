@@ -36,7 +36,7 @@ public class ScheduledTaskController {
             description = "Searches for tasks currently saved in the database using parameters")
     @GetMapping(path="/find")
     @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
-    private ResponseEntity<List<ScheduledTaskDTO>> findTasks(@RequestParam(name = "name", required = false) String name,
+    public ResponseEntity<List<ScheduledTaskDTO>> findTasks(@RequestParam(name = "name", required = false) String name,
                                                              @RequestParam(name = "url", required = false) String url){
 
         return new ResponseEntity<>(scheduledTaskService.searchTasks(name, url), HttpStatus.OK);
@@ -50,7 +50,7 @@ public class ScheduledTaskController {
             description = "Searches for all tasks currently saved in the database")
     @GetMapping(path="/find/all")
     @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
-    private ResponseEntity<List<ScheduledTaskDTO>> findAllTasks(){
+    public ResponseEntity<List<ScheduledTaskDTO>> findAllTasks(){
 
         return new ResponseEntity<>(scheduledTaskService.find(), HttpStatus.OK);
     }
@@ -66,7 +66,7 @@ public class ScheduledTaskController {
     @ApiResponse(responseCode = "200", description = "update succeeded, see body for response")
     @ApiResponse(responseCode = "400", description = "update body is null")
     @ApiResponse(responseCode = "417", description = "update body was not valid for task update")
-    private ResponseEntity<ScheduledTaskDTO> updateTask(@RequestBody ScheduledTaskDTO taskDto){
+    public ResponseEntity<ScheduledTaskDTO> updateTask(@RequestBody ScheduledTaskDTO taskDto){
 
         if(taskDto == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -91,7 +91,7 @@ public class ScheduledTaskController {
     @ApiResponse(responseCode = "200", description = "create succeeded, see body for response")
     @ApiResponse(responseCode = "400", description = "create body is null")
     @ApiResponse(responseCode = "417", description = "create body was not valid for task creation")
-    private ResponseEntity<ScheduledTaskDTO> createTask(@RequestBody ScheduledTaskDTO taskDto){
+    public ResponseEntity<ScheduledTaskDTO> createTask(@RequestBody ScheduledTaskDTO taskDto){
 
         if(taskDto == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -115,7 +115,7 @@ public class ScheduledTaskController {
     @DeleteMapping(path="/delete")
     @ApiResponse(responseCode = "200", description = "delete succeeded")
     @ApiResponse(responseCode = "400", description = "name parameter is null")
-    private ResponseEntity deleteTask(@RequestParam(name = "name") String name){
+    public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "name") String name){
 
         if(StringUtils.isBlank(name)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
