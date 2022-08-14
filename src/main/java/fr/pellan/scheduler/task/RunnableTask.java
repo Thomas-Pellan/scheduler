@@ -8,6 +8,7 @@ import fr.pellan.scheduler.service.ScheduledTaskOutputService;
 import fr.pellan.scheduler.util.HttpUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -39,7 +40,7 @@ public class RunnableTask implements Runnable{
         JSONObject body = scheduledTaskInputService.buildJsonBodyData(taskData.getInputs());
 
         //Send request and handle response
-        HttpResponse response = httpUtil.sendHttpPost(taskData.getUrl(), body.toString());
+        HttpResponse response = httpUtil.sendHttpPost(taskData.getUrl(), body == null ? "" : body.toString());
 
         taskData.setLastExecution(LocalDateTime.now());
         if(response == null){
@@ -51,6 +52,11 @@ public class RunnableTask implements Runnable{
 
         taskData.setLastResult(String.valueOf(response.getStatusLine().getStatusCode()));
         scheduledTaskRepository.save(taskData);
+
+        if(response.getStatusLine().getStatusCode() != 200){
+            scheduledTaskOutputService.create(taskData, TaskState.INVALID_RESULT, response.getEntity().toString(), null);
+            return;
+        }
 
         if(response.getEntity() == null){
             scheduledTaskOutputService.create(taskData, TaskState.SUCCESS, null, null);

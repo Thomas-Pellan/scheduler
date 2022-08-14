@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Simple healthcheck controller.
  */
-@Tag(name = "Health checck for the app")
+@Tag(name = "Health check for the app")
 @Slf4j
 @RestController
 @RequestMapping("actuator")

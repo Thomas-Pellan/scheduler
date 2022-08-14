@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -35,9 +36,17 @@ public class ScheduledTaskService {
     @Autowired
     CronExpressionService cronExpressionService;
 
+    @Autowired
+    ThreadPoolService threadPoolService;
+
     public List<ScheduledTaskDTO> searchTasks(String name, String url){
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findByNameOrUrl(name, url));
+    }
+
+    public ScheduledTaskDTO findById(Integer id){
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findById(id).orElse(null));
     }
 
     public List<ScheduledTaskDTO> find(){
@@ -45,21 +54,32 @@ public class ScheduledTaskService {
         return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());
     }
 
-    public boolean deleteTask(String name){
+    @Transactional
+    public boolean deleteTask(Integer id){
 
-        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findByName(name);
+        ScheduledTaskEntity task = scheduledTaskRepository.findById(id).orElse(null);
+
+        if(task == null){
+            return true;
+        }
+
+        //Inactivate and reload the pool if task to delete was active
+        if(task.isActive()){
+            task.setActive(false);
+            task = scheduledTaskRepository.save(task);
+            threadPoolService.reloadThreadTasks();
+        }
 
         //Deleting sub entities
-        tasks.forEach(t -> {
-            scheduledTaskInputService.deleteInputs(t);
-            scheduledTaskOutputService.delete(t);
-        });
+        scheduledTaskInputService.deleteInputs(task);
+        scheduledTaskOutputService.delete(task);
 
-        scheduledTaskRepository.deleteAll(tasks);
+        scheduledTaskRepository.delete(task);
 
         return true;
     }
 
+    @Transactional
     public ScheduledTaskDTO updateTask(ScheduledTaskDTO taskDto){
 
         ScheduledTaskEntity task = scheduledTaskRepository.findById(taskDto.getId()).orElse(null);
@@ -77,7 +97,12 @@ public class ScheduledTaskService {
         task.setName(taskDto.getName());
         task.setUrl(taskDto.getUrl());
 
-        return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.save(task));
+        ScheduledTaskEntity savedTask = scheduledTaskRepository.save(task);
+
+        //Reload the Thread Pool
+        threadPoolService.reloadThreadTasks();
+
+        return scheduledTaskDTOFactory.buildScheduledTaskDTO(savedTask);
     }
 
     public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){

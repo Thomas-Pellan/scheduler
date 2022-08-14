@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +42,21 @@ public class ScheduledTaskController {
     }
 
     /**
-     * Returns all shcedukled tasks stored.
+     * Gets a task by its id
+     * @param id the id of the task
+     * @return the task if found
+     */
+    @Operation(summary = "Find tasks",
+            description = "Searches for tasks currently saved in the database using parameters")
+    @GetMapping(path="/find/id")
+    @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
+    private ResponseEntity<ScheduledTaskDTO> findTaskById(@RequestParam(name = "id") Integer id){
+
+        return new ResponseEntity<>(scheduledTaskService.findById(id), HttpStatus.OK);
+    }
+
+    /**
+     * Returns all scheduled tasks stored.
      * @return a list of scheduled tasks dtos
      */
     @Operation(summary = "Find all database tasks",
@@ -107,20 +120,20 @@ public class ScheduledTaskController {
 
     /**
      * Deletes a terget task from the database.
-     * @param name the name of the task to delete
+     * @param id the id of the task to delete
      * @return true if deletion successfull, false otherwise
      */
     @Operation(summary = "Task deletion",
             description = "Deletes the target task and it's info (logs, inputs, etc).")
     @DeleteMapping(path="/delete")
     @ApiResponse(responseCode = "200", description = "delete succeeded")
-    @ApiResponse(responseCode = "400", description = "name parameter is null")
-    public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "name") String name){
+    @ApiResponse(responseCode = "400", description = "id parameter is null")
+    public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "id") Integer id){
 
-        if(StringUtils.isBlank(name)){
+        if(id == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(scheduledTaskService.deleteTask(name), HttpStatus.OK);
+        return new ResponseEntity<>(scheduledTaskService.deleteTask(id), HttpStatus.OK);
     }
 }
