@@ -22,7 +22,7 @@ public class CronExpressionService {
     private CronExpressionRepository cronExpressionRepository;
 
     /**
-     * Creates a cron rxpression from the given string and persists it in the database.
+     * Creates a cron expression from the given string and persists it in the database.
      * @param expression the target string to persists
      * @return an entity saved in the db
      */

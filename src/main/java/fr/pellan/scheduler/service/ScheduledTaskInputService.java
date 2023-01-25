@@ -57,9 +57,7 @@ public class ScheduledTaskInputService {
         }
 
         JsonObject json = new JsonObject();
-        inputs.forEach(in -> {
-            json.addProperty(in.getKey(), in.getValue());
-        });
+        inputs.forEach(in -> json.addProperty(in.getKey(), in.getValue()));
         return json;
     }
 }
