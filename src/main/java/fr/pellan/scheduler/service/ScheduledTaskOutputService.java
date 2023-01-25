@@ -63,7 +63,7 @@ public class ScheduledTaskOutputService {
 
         List<ScheduledTaskOutputEntity> outputs = scheduledTaskOutputRepository.findByTask(task);
         if(!CollectionUtils.isEmpty(outputs)){
-            scheduledTaskOutputRepository.deleteAll();
+            scheduledTaskOutputRepository.deleteAll(outputs);
         }
 
         return true;

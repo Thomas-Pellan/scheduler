@@ -1,10 +1,8 @@
 package fr.pellan.scheduler.factory;
 
 import fr.pellan.scheduler.entity.CronExpressionEntity;
-import fr.pellan.scheduler.repository.CronExpressionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +12,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class CronExceptionEntityFactory {
-
-    @Autowired
-    CronExpressionRepository cronExpressionRepository;
 
     public CronExpressionEntity buildCronExpressionEntity(String cronExpression){
 

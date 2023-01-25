@@ -45,7 +45,7 @@ public class ScheduledTaskInputService {
 
         List<ScheduledTaskInputEntity> inputs = scheduledTaskInputRepository.findByTask(task);
         if(!CollectionUtils.isEmpty(inputs)){
-            scheduledTaskInputRepository.deleteAll();
+            scheduledTaskInputRepository.deleteAll(inputs);
         }
 
         return true;

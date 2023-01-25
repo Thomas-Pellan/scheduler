@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CronExpressionServiceTest {
+class CronExpressionServiceTest {
 
     @InjectMocks
     CronExpressionService cronExpressionService;
@@ -73,8 +73,8 @@ public class CronExpressionServiceTest {
 
         verify(cronExpressionRepository).save(expression);
         assertNotNull(expression);
-        assertEquals(expression.getCronPattern(), validCronExpression);
-        assertEquals(expression.getId(), 1);
+        assertEquals(validCronExpression, expression.getCronPattern());
+        assertEquals(1, expression.getId());
     }
 
     @Test
@@ -83,13 +83,13 @@ public class CronExpressionServiceTest {
         String validCronExpression = "* */2 * * * *";
         CronExpressionEntity existingDummyExpression = new CronExpressionEntity(2, validCronExpression);
 
-        when(cronExpressionRepository.findByExpression(Mockito.any(String.class))).then((Answer<CronExpressionEntity>) invocation -> existingDummyExpression);
+        when(cronExpressionRepository.findByExpression(Mockito.any(String.class))).thenReturn(existingDummyExpression);
 
         CronExpressionEntity expression = cronExpressionService.createExpression(validCronExpression);
 
         verify(cronExpressionRepository).findByExpression(validCronExpression);
         assertNotNull(expression);
-        assertEquals(expression.getCronPattern(), existingDummyExpression.getCronPattern());
-        assertEquals(expression.getId(), existingDummyExpression.getId());
+        assertEquals(existingDummyExpression.getCronPattern(), expression.getCronPattern());
+        assertEquals(existingDummyExpression.getId(), expression.getId());
     }
 }
