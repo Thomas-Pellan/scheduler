@@ -1,5 +1,6 @@
 package fr.pellan.scheduler.service;
 
+import com.google.gson.JsonObject;
 import fr.pellan.scheduler.dto.ScheduledTaskInputDTO;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
@@ -7,8 +8,6 @@ import fr.pellan.scheduler.factory.ScheduledTaskInputDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskInputEntityFactory;
 import fr.pellan.scheduler.repository.ScheduledTaskInputRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -52,18 +51,14 @@ public class ScheduledTaskInputService {
         return true;
     }
 
-    public JSONObject buildJsonBodyData(List<ScheduledTaskInputEntity> inputs){
+    public JsonObject buildJsonBodyData(List<ScheduledTaskInputEntity> inputs){
         if(CollectionUtils.isEmpty(inputs)){
             return null;
         }
 
-        JSONObject json = new JSONObject();
+        JsonObject json = new JsonObject();
         inputs.forEach(in -> {
-            try {
-                json.put(in.getKey(), in.getValue());
-            } catch (JSONException e) {
-                log.error("buildJsonBodyData : error in json body init, data will be missing", e);
-            }
+            json.addProperty(in.getKey(), in.getValue());
         });
         return json;
     }

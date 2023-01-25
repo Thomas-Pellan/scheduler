@@ -1,6 +1,7 @@
 package fr.pellan.scheduler.task;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.service.ScheduledTaskInputService;
@@ -8,10 +9,8 @@ import fr.pellan.scheduler.service.ScheduledTaskOutputService;
 import fr.pellan.scheduler.util.HttpUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -37,7 +36,7 @@ public class RunnableTask implements Runnable{
         scheduledTaskOutputService.create(taskData, TaskState.STARTED, null, null);
 
         //Building body data
-        JSONObject body = scheduledTaskInputService.buildJsonBodyData(taskData.getInputs());
+        JsonObject body = scheduledTaskInputService.buildJsonBodyData(taskData.getInputs());
 
         //Send request and handle response
         HttpResponse response = httpUtil.sendHttpPost(taskData.getUrl(), body == null ? "" : body.toString());
