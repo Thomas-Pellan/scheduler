@@ -50,7 +50,7 @@ public class ScheduledTaskController {
             description = "Searches for tasks currently saved in the database using parameters")
     @GetMapping(path="/find/id")
     @ApiResponse(responseCode = "200", description = "search succeeded, see body for response")
-    private ResponseEntity<ScheduledTaskDTO> findTaskById(@RequestParam(name = "id") Integer id){
+    public ResponseEntity<ScheduledTaskDTO> findTaskById(@RequestParam(name = "id") Integer id){
 
         return new ResponseEntity<>(scheduledTaskService.findById(id), HttpStatus.OK);
     }

@@ -60,7 +60,7 @@ public class ScheduledTaskService {
         ScheduledTaskEntity task = scheduledTaskRepository.findById(id).orElse(null);
 
         if(task == null){
-            return true;
+            return false;
         }
 
         //Inactivate and reload the pool if task to delete was active
