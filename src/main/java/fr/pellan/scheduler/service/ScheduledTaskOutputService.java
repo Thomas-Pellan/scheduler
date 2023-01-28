@@ -51,8 +51,8 @@ public class ScheduledTaskOutputService {
         List<ScheduledTaskOutputEntity> outputs = scheduledTaskOutputRepository.findByTaskName(taskName);
         if(!CollectionUtils.isEmpty(outputs)){
 
-            outputs.removeIf(o -> o.getExecutionDate().isBefore(date));
-            scheduledTaskOutputRepository.deleteAll();
+            outputs.removeIf(o -> o.getExecutionDate().isAfter(date));
+            scheduledTaskOutputRepository.deleteAll(outputs);
         }
 
         return true;

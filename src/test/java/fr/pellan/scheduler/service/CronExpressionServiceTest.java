@@ -30,11 +30,6 @@ class CronExpressionServiceTest {
     @Mock
     CronExceptionEntityFactory cronExceptionEntityFactory;
 
-    @BeforeEach
-    public void init(){
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     void givenValidCronExpression_returnValid(){
 

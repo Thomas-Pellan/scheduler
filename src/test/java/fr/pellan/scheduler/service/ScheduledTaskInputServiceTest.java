@@ -39,11 +39,6 @@ class ScheduledTaskInputServiceTest {
     @Mock
     ScheduledTaskInputDTOFactory scheduledTaskInputDTOFactory;
 
-    @BeforeEach
-    public void init(){
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     void givenEmptyInputs_whenCreateInputs_returnEmptyList(){
 
