@@ -54,7 +54,7 @@ public class ScheduledTaskOutputController {
     public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "name") String name,
                                       @RequestParam(name = "date") LocalDateTime date){
 
-        if(StringUtils.isBlank(name) || date == null){
+        if(StringUtils.isBlank(name)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 

@@ -7,13 +7,11 @@ import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
 import fr.pellan.scheduler.factory.ScheduledTaskInputDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskInputEntityFactory;
 import fr.pellan.scheduler.repository.ScheduledTaskInputRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -42,7 +40,7 @@ class ScheduledTaskInputServiceTest {
     @Test
     void givenEmptyInputs_whenCreateInputs_returnEmptyList(){
 
-        assertEquals(Collections.EMPTY_LIST, scheduledTaskInputService.createInputs(null, Collections.EMPTY_LIST));
+        assertEquals(Collections.EMPTY_LIST, scheduledTaskInputService.createInputs(null, Collections.emptyList()));
     }
 
     @Test

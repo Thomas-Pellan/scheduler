@@ -19,8 +19,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class ScheduledTaskService {
-    @Autowired
-    private CronExpressionRepository cronExpressionRepository;
 
     @Autowired
     ScheduledTaskEntityFactory scheduledTaskEntityFactory;
@@ -85,9 +83,12 @@ public class ScheduledTaskService {
         }
 
         //Update Cron if changed or create a new one
-        if(!StringUtils.isBlank(taskDto.getCronExpression())){
-            task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
+        if(StringUtils.isBlank(taskDto.getCronExpression())){
+            return null;
         }
+
+        CronExpressionEntity expression = cronExpressionService.findExpression(taskDto.getCronExpression());
+        task.setCronExpression(expression != null ? expression : cronExpressionService.createExpression(taskDto.getCronExpression()));
 
         //Update task
         task.setActive(taskDto.isActive());
@@ -105,7 +106,7 @@ public class ScheduledTaskService {
     public ScheduledTaskDTO createTask(ScheduledTaskDTO taskDto){
 
         ScheduledTaskEntity task = scheduledTaskEntityFactory.buildScheduledTaskEntity(taskDto);
-        if(task == null){
+        if(task == null || StringUtils.isBlank(task.getName()) || StringUtils.isBlank(taskDto.getCronExpression())){
             return null;
         }
 
@@ -116,7 +117,7 @@ public class ScheduledTaskService {
         }
 
         //Create cron expression if it does not exist
-        CronExpressionEntity expression = cronExpressionRepository.findByExpression(taskDto.getCronExpression());
+        CronExpressionEntity expression = cronExpressionService.findExpression(taskDto.getCronExpression());
         task.setCronExpression(expression != null ? expression : cronExpressionService.createExpression(taskDto.getCronExpression()));
 
         ScheduledTaskEntity newTask = scheduledTaskRepository.save(task);

@@ -1,8 +1,6 @@
 package fr.pellan.scheduler.factory;
 
-import fr.pellan.scheduler.dto.ScheduledTaskInputDTO;
 import fr.pellan.scheduler.dto.ScheduledTaskOutputDTO;
-import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskOutputEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
