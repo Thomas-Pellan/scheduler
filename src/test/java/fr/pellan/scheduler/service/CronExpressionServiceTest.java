@@ -45,6 +45,18 @@ class CronExpressionServiceTest {
     }
 
     @Test
+    void givenString_whenSearch_returnGivenCronExpression(){
+
+        CronExpressionEntity dummy = new CronExpressionEntity(1, "* * * * * *");
+        when(cronExpressionRepository.findByExpression(Mockito.any(String.class))).thenReturn(dummy);
+
+        CronExpressionEntity result = cronExpressionService.findExpression("* * * * * *");
+
+        assertEquals(dummy, result);
+        verify(cronExpressionRepository).findByExpression("* * * * * *");
+    }
+
+    @Test
     void givenNewExpression_whenSaved_sendItBack(){
 
         String validCronExpression = "* */2 * * * *";

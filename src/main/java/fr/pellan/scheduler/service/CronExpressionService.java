@@ -22,6 +22,16 @@ public class CronExpressionService {
     private CronExpressionRepository cronExpressionRepository;
 
     /**
+     * Finds existing cron expressions from the given string.
+     * @param expression a string to look after
+     * @return an entity saved in the db
+     */
+    public CronExpressionEntity findExpression(String expression){
+
+        return cronExpressionRepository.findByExpression(expression);
+    }
+
+    /**
      * Creates a cron expression from the given string and persists it in the database.
      * @param expression the target string to persists
      * @return an entity saved in the db

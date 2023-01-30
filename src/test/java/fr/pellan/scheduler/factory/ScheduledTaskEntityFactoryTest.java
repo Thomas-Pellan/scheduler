@@ -25,7 +25,7 @@ class ScheduledTaskEntityFactoryTest {
     @Test
     void givenValidDto_returnNewObject(){
 
-        ScheduledTaskEntity dummyEntity = new ScheduledTaskEntity(null, "test", null, true, "", null, null, null);
+        ScheduledTaskEntity dummyEntity = new ScheduledTaskEntity(null, "test", null, true, "", null, null, null, null);
         ScheduledTaskDTO dummyDTO = new ScheduledTaskDTO(null, "test","* * * * * *", true, "", null, null, null);
 
         assertEquals(dummyEntity, scheduledTaskEntityFactory.buildScheduledTaskEntity(dummyDTO));

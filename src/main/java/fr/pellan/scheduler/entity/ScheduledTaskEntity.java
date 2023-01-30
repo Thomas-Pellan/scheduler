@@ -28,7 +28,7 @@ public class ScheduledTaskEntity {
     @Column(name="name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="id_cron_expression")
     private CronExpressionEntity cronExpression;
 
@@ -44,6 +44,9 @@ public class ScheduledTaskEntity {
     @Column(name="last_result")
     private String lastResult;
 
-    @OneToMany(mappedBy="scheduledTask", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="scheduledTask", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ScheduledTaskInputEntity> inputs;
+
+    @OneToMany(mappedBy="scheduledTask", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ScheduledTaskOutputEntity> outputs;
 }

@@ -30,7 +30,7 @@ class ScheduledTaskDTOFactoryTest {
     @Test
     void givenValidObjects_returnValidDTOs(){
 
-        ScheduledTaskEntity dummyEntity = new ScheduledTaskEntity(null, "test", new CronExpressionEntity(null, "* * * * * *"), true, "", null, "", null);
+        ScheduledTaskEntity dummyEntity = new ScheduledTaskEntity(null, "test", new CronExpressionEntity(null, "* * * * * *"), true, "", null, "", null, null);
         ScheduledTaskDTO dummyDTO = new ScheduledTaskDTO(null, "test","* * * * * *", true, "", null, "", null);
 
         assertEquals(dummyDTO, scheduledTaskDTOFactory.buildScheduledTaskDTO(dummyEntity));

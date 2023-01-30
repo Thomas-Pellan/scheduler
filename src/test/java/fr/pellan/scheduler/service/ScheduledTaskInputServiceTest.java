@@ -54,7 +54,7 @@ class ScheduledTaskInputServiceTest {
         ScheduledTaskInputEntity dummyInput1 = new ScheduledTaskInputEntity(null, null, "key1", "value1");
         ScheduledTaskInputEntity dummyInput2 = new ScheduledTaskInputEntity(null, null, "key2", "value2");
         List<ScheduledTaskInputEntity> inputDummies = List.of(dummyInput1, dummyInput2);
-        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null);
+        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null, null);
 
 
         when(scheduledTaskInputEntityFactory.buildScheduledTaskInputEntity(Mockito.any(List.class))).thenReturn(inputDummies);
@@ -82,7 +82,7 @@ class ScheduledTaskInputServiceTest {
     @Test
     void givenEmptyInputs_whenDeleteInputs_DoNothing(){
 
-        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null);
+        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null, null);
         when(scheduledTaskInputRepository.findByTask(Mockito.any(ScheduledTaskEntity.class))).thenReturn(null);
 
         scheduledTaskInputService.deleteInputs(dummyTaskEntity);
@@ -92,7 +92,7 @@ class ScheduledTaskInputServiceTest {
     @Test
     void givenInputs_whenDeleteInputs_callDeleteAll(){
 
-        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null);
+        ScheduledTaskEntity dummyTaskEntity = new ScheduledTaskEntity(null, "testTask", null, true, "", null, null, null, null);
         ScheduledTaskInputEntity dummyInput1 = new ScheduledTaskInputEntity(null, null, "key1", "value1");
         ScheduledTaskInputEntity dummyInput2 = new ScheduledTaskInputEntity(null, null, "key2", "value2");
         List<ScheduledTaskInputEntity> inputDummies = List.of(dummyInput1, dummyInput2);

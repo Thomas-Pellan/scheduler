@@ -1,9 +1,11 @@
 package fr.pellan.scheduler.service;
 
 import fr.pellan.scheduler.dto.ScheduledTaskDTO;
+import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
 import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
+import fr.pellan.scheduler.repository.CronExpressionRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +19,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class ScheduledTaskService {
+    @Autowired
+    private CronExpressionRepository cronExpressionRepository;
 
     @Autowired
     ScheduledTaskEntityFactory scheduledTaskEntityFactory;
@@ -29,9 +33,6 @@ public class ScheduledTaskService {
 
     @Autowired
     ScheduledTaskInputService scheduledTaskInputService;
-
-    @Autowired
-    ScheduledTaskOutputService scheduledTaskOutputService;
 
     @Autowired
     CronExpressionService cronExpressionService;
@@ -69,10 +70,6 @@ public class ScheduledTaskService {
             task = scheduledTaskRepository.save(task);
             threadPoolService.reloadThreadTasks();
         }
-
-        //Deleting sub entities
-        scheduledTaskInputService.deleteInputs(task);
-        scheduledTaskOutputService.delete(task);
 
         scheduledTaskRepository.delete(task);
 
@@ -119,7 +116,8 @@ public class ScheduledTaskService {
         }
 
         //Create cron expression if it does not exist
-        task.setCronExpression(cronExpressionService.createExpression(taskDto.getCronExpression()));
+        CronExpressionEntity expression = cronExpressionRepository.findByExpression(taskDto.getCronExpression());
+        task.setCronExpression(expression != null ? expression : cronExpressionService.createExpression(taskDto.getCronExpression()));
 
         ScheduledTaskEntity newTask = scheduledTaskRepository.save(task);
         ScheduledTaskDTO dto = scheduledTaskDTOFactory.buildScheduledTaskDTO(newTask);
