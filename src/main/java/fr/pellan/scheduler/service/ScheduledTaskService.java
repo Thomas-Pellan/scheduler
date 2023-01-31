@@ -102,10 +102,6 @@ public class ScheduledTaskService {
 
         ScheduledTaskEntity savedTask = scheduledTaskRepository.save(task);
 
-        //Reload the Thread Pool if the class is active
-        if(taskDto.isActive()){
-        }
-
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(savedTask);
     }
 

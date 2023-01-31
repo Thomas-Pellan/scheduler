@@ -2,7 +2,6 @@ package fr.pellan.scheduler.service;
 
 import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.util.HttpUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

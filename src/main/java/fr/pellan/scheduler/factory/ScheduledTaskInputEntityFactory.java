@@ -24,7 +24,7 @@ public class ScheduledTaskInputEntityFactory {
             return new ArrayList<>();
         }
 
-        return dtos.stream().map(this::buildScheduledTaskInputEntity).collect(Collectors.toList());
+        return dtos.stream().map(this::buildScheduledTaskInputEntity).toList();
     }
 
     public ScheduledTaskInputEntity buildScheduledTaskInputEntity(ScheduledTaskInputDTO dto){

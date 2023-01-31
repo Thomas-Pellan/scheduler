@@ -23,7 +23,7 @@ public class ScheduledTaskInputDTOFactory {
             return new ArrayList<>();
         }
 
-        return entities.stream().map(this::buildScheduledTaskInputDTO).collect(Collectors.toList());
+        return entities.stream().map(this::buildScheduledTaskInputDTO).toList();
     }
 
     public ScheduledTaskInputDTO buildScheduledTaskInputDTO(ScheduledTaskInputEntity entity){
