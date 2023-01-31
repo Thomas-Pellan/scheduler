@@ -4,7 +4,6 @@ import fr.pellan.scheduler.dto.ScheduledTaskDTO;
 import fr.pellan.scheduler.dto.ScheduledTaskInputDTO;
 import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.entity.ScheduledTaskInputEntity;
 import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
@@ -40,9 +39,6 @@ class ScheduledTaskServiceTest {
 
     @Mock
     ScheduledTaskEntityFactory scheduledTaskEntityFactory;
-
-    @Mock
-    ThreadPoolService threadPoolService;
 
     @Mock
     ScheduledTaskInputService scheduledTaskInputService;
@@ -129,7 +125,6 @@ class ScheduledTaskServiceTest {
         verify(scheduledTaskRepository).findById(0);
         dummy.setActive(false);
         verify(scheduledTaskRepository).save(dummy);
-        verify(threadPoolService).reloadThreadTasks();
         verify(scheduledTaskRepository).delete(dummy);
     }
 
@@ -191,7 +186,6 @@ class ScheduledTaskServiceTest {
         verify(cronExpressionService).findExpression("* * * * * */12");
         verify(cronExpressionService).createExpression("* * * * * */12");
         verify(scheduledTaskRepository).save(dummy);
-        verify(threadPoolService).reloadThreadTasks();
         verify(scheduledTaskDTOFactory).buildScheduledTaskDTO(dummy);
         assertEquals(dummyDto, result);
     }

@@ -5,7 +5,6 @@ import fr.pellan.scheduler.entity.CronExpressionEntity;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
 import fr.pellan.scheduler.factory.ScheduledTaskDTOFactory;
 import fr.pellan.scheduler.factory.ScheduledTaskEntityFactory;
-import fr.pellan.scheduler.repository.CronExpressionRepository;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +34,6 @@ public class ScheduledTaskService {
     @Autowired
     CronExpressionService cronExpressionService;
 
-    @Autowired
-    ThreadPoolService threadPoolService;
-
     public List<ScheduledTaskDTO> searchTasks(String name, String url){
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(scheduledTaskRepository.findByNameOrUrl(name, url));
@@ -53,6 +49,16 @@ public class ScheduledTaskService {
         return scheduledTaskDTOFactory.buildScheduledTaskDTO((List<ScheduledTaskEntity>) scheduledTaskRepository.findAll());
     }
 
+    public List<ScheduledTaskEntity> findActive(){
+
+        return scheduledTaskRepository.findActive();
+    }
+
+    public ScheduledTaskEntity save(ScheduledTaskEntity entity){
+
+        return scheduledTaskRepository.save(entity);
+    }
+
     @Transactional
     public boolean deleteTask(Integer id){
 
@@ -66,7 +72,6 @@ public class ScheduledTaskService {
         if(task.isActive()){
             task.setActive(false);
             task = scheduledTaskRepository.save(task);
-            threadPoolService.reloadThreadTasks();
         }
 
         scheduledTaskRepository.delete(task);
@@ -99,7 +104,6 @@ public class ScheduledTaskService {
 
         //Reload the Thread Pool if the class is active
         if(taskDto.isActive()){
-            threadPoolService.reloadThreadTasks();
         }
 
         return scheduledTaskDTOFactory.buildScheduledTaskDTO(savedTask);

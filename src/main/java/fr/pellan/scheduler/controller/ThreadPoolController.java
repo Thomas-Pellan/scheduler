@@ -34,7 +34,9 @@ public class ThreadPoolController {
     @ApiResponse(responseCode = "200", description = "reload succeeded")
     public ResponseEntity<HttpStatus> reloadThreadPool(){
 
-        threadPoolService.reloadThreadTasks();
+        threadPoolService.purgeThreadTasks();
+
+        threadPoolService.initThreadTasks();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

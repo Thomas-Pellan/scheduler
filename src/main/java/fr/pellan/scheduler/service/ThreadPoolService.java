@@ -1,13 +1,11 @@
 package fr.pellan.scheduler.service;
 
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.repository.ScheduledTaskOutputRepository;
-import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.task.RunnableTask;
 import fr.pellan.scheduler.util.HttpUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -17,58 +15,63 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ThreadPoolService {
 
-    @Autowired
-    private HttpUtil httpUtil;
+    private final HttpUtil httpUtil;
 
-    @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private final ScheduledTaskService scheduledTaskService;
 
-    @Autowired
-    private ScheduledTaskInputService scheduledTaskInputService;
+    private final ScheduledTaskInputService scheduledTaskInputService;
 
-    @Autowired
-    private ScheduledTaskOutputService scheduledTaskOutputService;
+    private final ScheduledTaskOutputService scheduledTaskOutputService;
 
-    @Autowired
-    private ThreadPoolTaskScheduler taskScheduler;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
-    public void reloadThreadTasks(){
+    private ArrayList<ScheduledFuture<?>> tasks = new ArrayList<>();
 
-        log.info("reloadThreadTasks : call");
-        var executor = taskScheduler.getScheduledThreadPoolExecutor();
+    public void purgeThreadTasks(){
 
-        //Clean executor queue
-        executor.getQueue().forEach(executor::remove);
+        log.info("purgeThreadTasks : cancelling {} tasks", tasks.size());
 
-        //Purge the executor
-        executor.purge();
+        //Clean tasks
+        tasks.forEach(this::waitAndCancelTask);
+        tasks = new ArrayList<>();
 
-        log.info("reloadThreadTasks : purged");
+        log.info("purgeThreadTasks : purged");
+    }
 
-        initThreadTasks();
+    private void waitAndCancelTask(ScheduledFuture<?> task){
+        if(!task.isDone()){
+            try {
+                log.info("waitAndCancelTask : waiting for task to end");
+                task.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("waitAndCancelTask : task failed before cancel", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        task.cancel(false);
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void initThreadTasks(){
 
         log.info("initThreadTasks : getting active tasks");
-        List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findActive();
-        if (CollectionUtils.isEmpty(tasks)) {
+        List<ScheduledTaskEntity> activeTasks = scheduledTaskService.findActive();
+        if (CollectionUtils.isEmpty(activeTasks)) {
             return;
         }
 
-        log.info("initThreadTasks : creating {} tasks", tasks.size());
+        log.info("initThreadTasks : creating {} tasks", activeTasks.size());
 
         //Creating tasks
-        tasks.forEach(this::addScheduledTaskToThreadPool);
+        activeTasks.forEach(this::addScheduledTaskToThreadPool);
     }
 
     private void addScheduledTaskToThreadPool(ScheduledTaskEntity task){
@@ -77,7 +80,8 @@ public class ThreadPoolService {
         }
 
         CronTrigger cronTrigger = new CronTrigger(task.getCronExpression().getCronPattern());
+        RunnableTask runnable = new RunnableTask(httpUtil, task, scheduledTaskInputService, scheduledTaskService, scheduledTaskOutputService);
 
-        taskScheduler.schedule(new RunnableTask(httpUtil, task, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputService), cronTrigger);
+        tasks.add(taskScheduler.schedule(runnable, cronTrigger));
     }
 }

@@ -6,6 +6,7 @@ import fr.pellan.scheduler.entity.ScheduledTaskEntity;
 import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.service.ScheduledTaskInputService;
 import fr.pellan.scheduler.service.ScheduledTaskOutputService;
+import fr.pellan.scheduler.service.ScheduledTaskService;
 import fr.pellan.scheduler.util.HttpUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class RunnableTask implements Runnable{
 
     private ScheduledTaskInputService scheduledTaskInputService;
 
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private ScheduledTaskService scheduledTaskService;
 
     private ScheduledTaskOutputService scheduledTaskOutputService;
 
@@ -45,12 +46,12 @@ public class RunnableTask implements Runnable{
         if(response == null){
             scheduledTaskOutputService.create(taskData, TaskState.NETWORK_ERROR, null, null);
             taskData.setLastResult(null);
-            scheduledTaskRepository.save(taskData);
+            scheduledTaskService.save(taskData);
             return;
         }
 
         taskData.setLastResult(String.valueOf(response.getStatusLine().getStatusCode()));
-        scheduledTaskRepository.save(taskData);
+        scheduledTaskService.save(taskData);
 
         if(response.getStatusLine().getStatusCode() != 200){
             scheduledTaskOutputService.create(taskData, TaskState.INVALID_RESULT, response.getEntity().toString(), null);

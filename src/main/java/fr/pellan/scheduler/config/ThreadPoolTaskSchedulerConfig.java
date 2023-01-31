@@ -18,6 +18,7 @@ public class ThreadPoolTaskSchedulerConfig {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(poolSize);
         threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(true);
+        threadPoolTaskScheduler.setRemoveOnCancelPolicy(true);
         threadPoolTaskScheduler.setThreadNamePrefix(
                 "Scheduler");
         return threadPoolTaskScheduler;
