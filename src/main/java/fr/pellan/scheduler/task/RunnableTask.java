@@ -33,7 +33,7 @@ public class RunnableTask implements Runnable{
     @Override
     public void run() {
 
-        scheduledTaskOutputService.create(taskData, TaskState.STARTED, null, null);
+        scheduledTaskOutputService.create(taskData, TaskState.STARTED);
 
         //Building body data
         JsonObject body = scheduledTaskInputService.buildJsonBodyData(taskData.getInputs());
@@ -58,7 +58,7 @@ public class RunnableTask implements Runnable{
         }
 
         if(response.getEntity() == null){
-            scheduledTaskOutputService.create(taskData, TaskState.SUCCESS, null, null);
+            scheduledTaskOutputService.create(taskData, TaskState.SUCCESS);
             return;
         }
 

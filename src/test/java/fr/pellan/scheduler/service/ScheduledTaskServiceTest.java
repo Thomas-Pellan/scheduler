@@ -167,7 +167,7 @@ class ScheduledTaskServiceTest {
         dummyDto.setId(0);
         dummyDto.setCronExpression("* * * * * */12");
         dummyDto.setName("modified");
-        dummyDto.setActive(false);
+        dummyDto.setActive(true);
         dummyDto.setUrl("modified");
 
         ScheduledTaskEntity dummy = new ScheduledTaskEntity();

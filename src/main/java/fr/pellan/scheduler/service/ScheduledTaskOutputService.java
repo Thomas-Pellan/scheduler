@@ -25,7 +25,11 @@ public class ScheduledTaskOutputService {
     @Autowired
     private ScheduledTaskOutputDTOFactory scheduledTaskOutputDTOFactory;
 
-    @Transactional
+    public ScheduledTaskOutputEntity create(ScheduledTaskEntity task, TaskState state){
+
+        return create(task, state, null, null);
+    }
+
     public ScheduledTaskOutputEntity create(ScheduledTaskEntity task, TaskState state, String data, String log){
 
         ScheduledTaskOutputEntity entity = ScheduledTaskOutputEntity.builder()

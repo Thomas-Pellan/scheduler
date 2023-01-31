@@ -15,7 +15,11 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 @Slf4j
 @Service
@@ -33,25 +37,29 @@ public class ThreadPoolService {
     @Autowired
     private ScheduledTaskOutputService scheduledTaskOutputService;
 
-    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-
-    private static final int POOL_SIZE= 5;
+    @Autowired
+    private ThreadPoolTaskScheduler taskScheduler;
 
     public void reloadThreadTasks(){
 
         log.info("reloadThreadTasks : call");
-        if(threadPoolTaskScheduler != null){
-            threadPoolTaskScheduler.destroy();
-            log.info("reloadThreadTasks : destroyed");
-        }
+        var executor = taskScheduler.getScheduledThreadPoolExecutor();
+
+        //Clean executor queue
+        executor.getQueue().forEach(executor::remove);
+
+        //Purge the executor
+        executor.purge();
+
+        log.info("reloadThreadTasks : purged");
 
         initThreadTasks();
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    private void initThreadTasks(){
+    public void initThreadTasks(){
 
-        log.info("initThreadTasks : call");
+        log.info("initThreadTasks : getting active tasks");
         List<ScheduledTaskEntity> tasks = scheduledTaskRepository.findActive();
         if (CollectionUtils.isEmpty(tasks)) {
             return;
@@ -59,21 +67,17 @@ public class ThreadPoolService {
 
         log.info("initThreadTasks : creating {} tasks", tasks.size());
 
-        //Init cron scheduler
-        threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(POOL_SIZE);
-        threadPoolTaskScheduler.initialize();
-
         //Creating tasks
-        tasks.forEach(t -> {
-            if(t.getCronExpression() == null || StringUtils.isBlank(t.getCronExpression().getCronPattern())){
-                return;
-            }
+        tasks.forEach(this::addScheduledTaskToThreadPool);
+    }
 
-            CronTrigger cronTrigger
-                    = new CronTrigger(t.getCronExpression().getCronPattern());
+    private void addScheduledTaskToThreadPool(ScheduledTaskEntity task){
+        if(task.getCronExpression() == null || StringUtils.isBlank(task.getCronExpression().getCronPattern())){
+            return;
+        }
 
-            threadPoolTaskScheduler.schedule(new RunnableTask(httpUtil, t, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputService), cronTrigger);
-        });
+        CronTrigger cronTrigger = new CronTrigger(task.getCronExpression().getCronPattern());
+
+        taskScheduler.schedule(new RunnableTask(httpUtil, task, scheduledTaskInputService, scheduledTaskRepository, scheduledTaskOutputService), cronTrigger);
     }
 }
