@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("test")
 public class MockTestTaskController {
 
-    private static final double RANDOM_FAIL = 0.3;
-
     /**
      * Prints the data received and sends back a simple response.
      * @param data the data input
@@ -37,11 +35,6 @@ public class MockTestTaskController {
     @ApiResponse(responseCode = "200", description = "call succeeded, see body for response")
     public ResponseEntity<String> helloWorld(@RequestBody MockTestTaskControllerDTO data){
 
-        if(Math.random() < RANDOM_FAIL){
-
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         TaskResultResponse response = TaskResultResponse.builder()
             .success(true)
             .data(data.getTestData())
@@ -49,5 +42,19 @@ public class MockTestTaskController {
             .build();
 
         return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.OK);
+    }
+
+    /**
+     * Responds with bad request, always
+     *
+     * @return a string output
+     */
+    @Operation(summary = "Bye World",
+            description = "Tells you your request is bad, every time")
+    @PostMapping(path="/byeworld")
+    @ApiResponse(responseCode = "400'", description = "request was bad, sad")
+    public ResponseEntity<String> byeWorld(){
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

@@ -51,8 +51,10 @@ public class ThreadPoolService {
             try {
                 log.info("waitAndCancelTask : waiting for task to end");
                 task.get();
-            } catch (InterruptedException | ExecutionException e) {
-                log.error("waitAndCancelTask : task failed before cancel", e);
+            } catch (ExecutionException e) {
+                log.error("waitAndCancelTask : task execution failed at some point", e);
+            } catch (InterruptedException e) {
+                log.error("waitAndCancelTask : task interrupted", e);
                 Thread.currentThread().interrupt();
             }
         }

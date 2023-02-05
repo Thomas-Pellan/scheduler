@@ -15,6 +15,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,8 +29,6 @@ class ThreadPoolServiceTest {
 
     private ThreadPoolTaskScheduler taskScheduler;
 
-    ThreadPoolService threadPoolService;
-
     private static final int FULL_POOL_SIZE = 2;
 
     @BeforeEach
@@ -41,25 +40,20 @@ class ThreadPoolServiceTest {
     }
 
     @Test
-    void givenThreadPoolAndTask_whenAskingForReloadWithActiveTasks_purge(){
+    void givenThreadPoolAndTask_whenPurgeCalled_purge(){
 
-        threadPoolService = new ThreadPoolService(new HttpUtil(), scheduledTaskService, new ScheduledTaskInputService(), new ScheduledTaskOutputService(), taskScheduler);
+        ThreadPoolService threadPoolService = new ThreadPoolService(new HttpUtil(), scheduledTaskService, new ScheduledTaskInputService(), new ScheduledTaskOutputService(), taskScheduler);
         Runnable dummyTask = mock(Runnable.class);
         CronTrigger dummyTrigger = new CronTrigger("*/1 * * * * *");
         ScheduledFuture<?> future = taskScheduler.schedule(dummyTask, dummyTrigger);
         ArrayList<ScheduledFuture<?>> tasks = new ArrayList<>();
         tasks.add(future);
-        Field privateTasksField = null;
+        Field privateTasksField;
         try {
             privateTasksField = ThreadPoolService.class.getDeclaredField("tasks");
             privateTasksField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            fail();
-        }
-
-        try {
             privateTasksField.set(threadPoolService, tasks);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             fail();
         }
 
@@ -73,9 +67,41 @@ class ThreadPoolServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    void givenThreadPoolAndTask_whenPurgeCalled_purgeEvenWhenTheyThrowErrors() throws ExecutionException, InterruptedException {
+
+        ThreadPoolService threadPoolService = new ThreadPoolService(new HttpUtil(), scheduledTaskService, new ScheduledTaskInputService(), new ScheduledTaskOutputService(), taskScheduler);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+
+        when(future.get()).thenThrow(new ExecutionException(new NullPointerException()));
+
+        try {
+            ArrayList<ScheduledFuture<?>> tasks = new ArrayList<>();
+            tasks.add(future);
+            Field privateTasksField = ThreadPoolService.class.getDeclaredField("tasks");
+            privateTasksField.setAccessible(true);
+            privateTasksField.set(threadPoolService, tasks);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            fail();
+        }
+
+        threadPoolService.purgeThreadTasks();
+
+        try {
+            Field privateTasksField = ThreadPoolService.class.getDeclaredField("tasks");
+            privateTasksField.setAccessible(true);
+            ArrayList<ScheduledFuture<?>> tasks = (ArrayList<ScheduledFuture<?>>) privateTasksField.get(threadPoolService);
+
+            assertEquals(0, tasks.size());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail();
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     void givenThreadPool_whenThereAreActiveTasks_createThemAndExecutethem(){
 
-        threadPoolService = new ThreadPoolService(new HttpUtil(), scheduledTaskService, new ScheduledTaskInputService(), new ScheduledTaskOutputService(), taskScheduler);
+        ThreadPoolService threadPoolService = new ThreadPoolService(new HttpUtil(), scheduledTaskService, new ScheduledTaskInputService(), new ScheduledTaskOutputService(), taskScheduler);
         ScheduledTaskEntity dummyEntity = new ScheduledTaskEntity();
         dummyEntity.setCronExpression(new CronExpressionEntity(0, "* * * * * *"));
         when(scheduledTaskService.findActive()).thenReturn(List.of(dummyEntity));

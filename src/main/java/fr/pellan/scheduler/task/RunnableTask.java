@@ -3,7 +3,6 @@ package fr.pellan.scheduler.task;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.pellan.scheduler.entity.ScheduledTaskEntity;
-import fr.pellan.scheduler.repository.ScheduledTaskRepository;
 import fr.pellan.scheduler.service.ScheduledTaskInputService;
 import fr.pellan.scheduler.service.ScheduledTaskOutputService;
 import fr.pellan.scheduler.service.ScheduledTaskService;
