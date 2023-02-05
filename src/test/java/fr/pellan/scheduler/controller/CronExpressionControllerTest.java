@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +39,7 @@ class CronExpressionControllerTest {
         MvcResult result = mockMvc.perform(post("/expression/validate").queryParam("expression", "* * * * *"))
                 .andExpect(status().isOk()).andReturn();
 
+        verify(cronExpressionService).validate("* * * * *");
         assertEquals("false", result.getResponse().getContentAsString());
     }
 
@@ -49,6 +51,7 @@ class CronExpressionControllerTest {
         MvcResult result = mockMvc.perform(post("/expression/validate").queryParam("expression", "* * * * * *"))
                 .andExpect(status().isOk()).andReturn();
 
+        verify(cronExpressionService).validate("* * * * * *");
         assertEquals("true", result.getResponse().getContentAsString());
     }
 }

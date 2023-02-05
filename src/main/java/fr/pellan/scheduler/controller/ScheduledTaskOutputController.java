@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class ScheduledTaskOutputController {
     @DeleteMapping(path="/flush")
     @ApiResponse(responseCode = "200", description = "delete succeeded")
     public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "name") String name,
-                                      @RequestParam(name = "date") LocalDateTime date){
+                                      @RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date){
 
         if(StringUtils.isBlank(name)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
