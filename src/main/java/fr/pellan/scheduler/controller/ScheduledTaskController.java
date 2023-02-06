@@ -81,10 +81,6 @@ public class ScheduledTaskController {
     @ApiResponse(responseCode = "417", description = "update body was not valid for task update")
     public ResponseEntity<ScheduledTaskDTO> updateTask(@RequestBody ScheduledTaskDTO taskDto){
 
-        if(taskDto == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         ScheduledTaskDTO dto = scheduledTaskService.updateTask(taskDto);
         if(dto == null){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
@@ -106,10 +102,6 @@ public class ScheduledTaskController {
     @ApiResponse(responseCode = "417", description = "create body was not valid for task creation")
     public ResponseEntity<ScheduledTaskDTO> createTask(@RequestBody ScheduledTaskDTO taskDto){
 
-        if(taskDto == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
         ScheduledTaskDTO dto = scheduledTaskService.createTask(taskDto);
         if(dto == null){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
@@ -129,10 +121,6 @@ public class ScheduledTaskController {
     @ApiResponse(responseCode = "200", description = "delete succeeded")
     @ApiResponse(responseCode = "400", description = "id parameter is null")
     public ResponseEntity<Boolean> deleteTask(@RequestParam(name = "id") Integer id){
-
-        if(id == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
         return new ResponseEntity<>(scheduledTaskService.deleteTask(id), HttpStatus.OK);
     }

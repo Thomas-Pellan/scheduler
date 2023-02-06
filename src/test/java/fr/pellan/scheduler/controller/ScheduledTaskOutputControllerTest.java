@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ScheduledTaskOutputController.class)
-class ScheduledOutputControllerTest {
+class ScheduledTaskOutputControllerTest {
 
     @MockBean
     ScheduledTaskOutputService scheduledTaskOutputService;
