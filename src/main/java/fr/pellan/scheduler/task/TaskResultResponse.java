@@ -11,7 +11,7 @@ public class TaskResultResponse implements Serializable  {
 
     private String data;
 
-    private boolean success;
+    private Boolean success;
 
     private String error;
 }

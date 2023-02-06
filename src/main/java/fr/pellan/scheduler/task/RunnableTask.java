@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @AllArgsConstructor
-public class RunnableTask implements Runnable{
+public class RunnableTask implements Runnable {
 
     private HttpUtil httpUtil;
 
@@ -43,7 +43,7 @@ public class RunnableTask implements Runnable{
 
         taskData.setLastExecution(LocalDateTime.now());
         if(response == null){
-            scheduledTaskOutputService.create(taskData, TaskState.NETWORK_ERROR, null, null);
+            scheduledTaskOutputService.create(taskData, TaskState.NETWORK_ERROR);
             taskData.setLastResult(null);
             scheduledTaskService.save(taskData);
             return;
@@ -66,13 +66,13 @@ public class RunnableTask implements Runnable{
             String responseContent = EntityUtils.toString(response.getEntity(), Charset.defaultCharset());
             TaskResultResponse responseDto = new Gson().fromJson(responseContent, TaskResultResponse.class);
 
-            if(responseDto == null){
+            if(responseDto.getSuccess() == null){
                 scheduledTaskOutputService.create(taskData, TaskState.INVALID_RESULT, null, responseContent);
                 return;
             }
 
             TaskState state;
-            if(responseDto.isSuccess()){
+            if(Boolean.TRUE.equals(responseDto.getSuccess())){
                 state = TaskState.SUCCESS;
             } else {
                 state = TaskState.ERROR;
