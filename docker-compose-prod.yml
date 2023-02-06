@@ -1,0 +1,41 @@
+version: '3.3'
+# Configuration for a "production" mysql docker
+services:
+  scheduler-db:
+    container_name: scheduler-db
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'dockerProdUser'
+      MYSQL_PASSWORD: 'dockerProdPwd'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - scheduler-db:/var/lib/mysql
+      - './src/main/resources/:/docker-entrypoint-initdb.d'
+# Small util to see the db on 9001 port
+  adminer:
+    image: adminer
+    container_name: scheduler-adminer
+    restart: always
+    ports:
+     - '9001:8080'
+# Configuration for the scheduler spring app, running with prod profile
+  scheduler-app:
+    container_name: scheduler-app
+    restart: always
+    image: "docker-scheduler-api:${PCK_VERSION}"
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+
+volumes:
+  scheduler-db:
+    driver: local

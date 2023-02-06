@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class SpringDocConfig {
 
     @Bean
-    public OpenAPI springShopOpenAPI() {
+    public OpenAPI schedulerOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Scheduler App Api documentation")
                         .description("This app does POST call on urls using Spring cron expressions and logs results.")
